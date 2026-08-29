@@ -1,0 +1,40 @@
+{
+    "name": "DS_SQL_Sink_MarketingSpend",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "LS_AzureSqlDatabase_OLTP",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "AzureSqlTable",
+        "schema": [
+            {
+                "name": "spend_date",
+                "type": "date"
+            },
+            {
+                "name": "channel",
+                "type": "nvarchar"
+            },
+            {
+                "name": "campaign",
+                "type": "nvarchar"
+            },
+            {
+                "name": "spend_amount",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "clicks",
+                "type": "int",
+                "precision": 10
+            }
+        ],
+        "typeProperties": {
+            "schema": "bronze",
+            "table": "marketing_spend"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

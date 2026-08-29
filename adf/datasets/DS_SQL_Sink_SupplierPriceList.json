@@ -1,0 +1,40 @@
+{
+    "name": "DS_SQL_Sink_SupplierPriceList",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "LS_AzureSqlDatabase_OLTP",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "AzureSqlTable",
+        "schema": [
+            {
+                "name": "product_id",
+                "type": "int",
+                "precision": 10
+            },
+            {
+                "name": "product_name",
+                "type": "nvarchar"
+            },
+            {
+                "name": "supplier_name",
+                "type": "nvarchar"
+            },
+            {
+                "name": "supplier_cost",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "effective_date",
+                "type": "date"
+            }
+        ],
+        "typeProperties": {
+            "schema": "bronze",
+            "table": "supplier_price_list"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}
