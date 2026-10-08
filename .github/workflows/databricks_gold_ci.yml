@@ -77,16 +77,16 @@ jobs:
           dbt debug --target ci
 
       - name: Install Packages
-        working-directory: atliq_commerce
+        working-directory: dbt
         run: |
           dbt deps
 
       - name: Build Models
-        working-directory: atliq_commerce
+        working-directory: dbt
         run: |
           dbt build --target ci
 
       - name: Execute Tests
-        working-directory: atliq_commerce
+        working-directory: dbt
         run: |
           dbt test --target ci
