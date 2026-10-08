@@ -90,3 +90,8 @@ jobs:
         working-directory: dbt
         run: |
           dbt test --target ci
+          
+      - name: Clean CI Schema
+        working-directory: dbt
+        run: |
+          dbt run-operation drop_schema --target ci
