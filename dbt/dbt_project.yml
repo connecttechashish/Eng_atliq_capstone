@@ -1,7 +1,6 @@
 name: 'atliq_commerce'
 version: '1.0.0'
 
-# This setting configures which "profile" dbt uses for this project.
 profile: 'atliq_commerce'
 
 model-paths: ["models"]
@@ -17,7 +16,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   atliq_commerce:
-    +schema: gold
-    gold:
-      +schema: gold
-      +enabled: true
+      +materialized: table
+      +file_format: delta
+      +location_root: "abfss://lakehouse@atliqadls.dfs.core.windows.net/gold"

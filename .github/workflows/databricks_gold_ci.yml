@@ -1,0 +1,92 @@
+# FILE: .github/workflows/databricks_gold_ci.yml
+#
+# Purpose:
+# Validate dbt project on every Pull Request and Push.
+# Executes dbt deps, dbt debug, dbt build and dbt test
+# against a dedicated CI schema in Databricks.
+#
+# Project:
+# atliq_commerce
+
+name: databricks-gold-ci-pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  validate-dbt:
+
+    name: Validate Gold Layer
+    runs-on: ubuntu-latest
+
+    env:
+      DBX_HOST: ${{ secrets.DBX_HOST }}
+      DBX_HTTP_PATH: ${{ secrets.DBX_HTTP_PATH }}
+      DBX_TOKEN: ${{ secrets.DBX_TOKEN }}
+
+    steps:
+
+      - name: Clone Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-databricks
+
+      - name: Create Runtime dbt Profile
+        run: |
+
+          mkdir -p ~/.dbt
+
+          cat <<EOF > ~/.dbt/profiles.yml
+
+          atliq_commerce:
+
+            target: ci
+
+            outputs:
+
+              ci:
+                type: databricks
+                catalog: atliq_dbx
+                schema: ci_validation
+                host: "$DBX_HOST"
+                http_path: "$DBX_HTTP_PATH"
+                token: "$DBX_TOKEN"
+                threads: 4
+
+          EOF
+
+      - name: Verify Databricks Connection
+        run: |
+          dbt debug --target ci
+
+      - name: Install Packages
+        working-directory: atliq_commerce
+        run: |
+          dbt deps
+
+      - name: Build Models
+        working-directory: atliq_commerce
+        run: |
+          dbt build --target ci
+
+      - name: Execute Tests
+        working-directory: atliq_commerce
+        run: |
+          dbt test --target ci

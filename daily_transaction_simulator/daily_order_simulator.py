@@ -17,6 +17,13 @@ Set these environment variables (or use a .env file):
     AZ_SQL_DB       e.g. atliq_commerce
     AZ_SQL_USER     e.g. atliq_admin
     AZ_SQL_PASSWORD your password
+
+ test connectivity in local machine powershell
+ Test-NetConnection <server.database.windows.net> -Port 1433 
+
+ Run below script:
+ python daily_order_simulator.py --orders 8  
+
 """
 import os
 import random
@@ -32,21 +39,28 @@ STATUSES = ["Placed", "Placed", "Shipped", "Delivered"]
 METHODS = ["UPI", "Credit Card", "Debit Card", "Net Banking", "Wallet", "COD"]
 
 
+import pyodbc
+
 def get_conn():
     server = os.environ["AZ_SQL_SERVER"]
     database = os.environ["AZ_SQL_DB"]
     user = os.environ["AZ_SQL_USER"]
     password = os.environ["AZ_SQL_PASSWORD"]
+
+    print(f"Connecting to {server}")
+
     conn_str = (
         "DRIVER={ODBC Driver 18 for SQL Server};"
-        f"SERVER={server};DATABASE={database};UID={user};PWD={password};"
-        "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        f"UID={user};"
+        f"PWD={password};"
+        "Encrypt=yes;"
+        "TrustServerCertificate=no;"
+        "Connection Timeout=60;"
     )
-    print("aaa")
-    print(conn_str)
 
     return pyodbc.connect(conn_str)
-
 
 def simulate(n_orders: int):
     conn = get_conn()

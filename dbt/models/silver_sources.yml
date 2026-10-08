@@ -10,3 +10,4 @@ sources:
       - name: payments
       - name: customers
       - name: products
+      - name: supplier_price_list
