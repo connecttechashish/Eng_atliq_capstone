@@ -18,4 +18,5 @@ models:
   atliq_commerce:
       +materialized: table
       +file_format: delta
-      +location_root: "abfss://lakehouse@atliqadls.dfs.core.windows.net/gold"
+      +location_root: "abfss://lakehouse@atliqadls.dfs.core.windows.net"
+      #+location_root: "abfss://lakehouse@atliqadls.dfs.core.windows.net/gold"
