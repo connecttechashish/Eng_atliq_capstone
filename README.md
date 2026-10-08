@@ -50,15 +50,81 @@ AtliQ Commerce uses a modern, cloud‑native data architecture designed to suppo
 
 ---
 
-## **Nightly Sync Workflow**
-1. OLTP receives new transactions  
-2. ADF ingests OLTP + external data into ADLS Bronze  
-3. Databricks transforms Bronze → Silver → Gold  
-4. Databricks exports Gold tables to ADLS as Parquet  
-5. Fabric Lakehouse refreshes tables  
-6. Power BI refreshes the semantic model and dashboard  
+## **CI/CD and Reliability Layer — GitHub Actions + dbt**
 
-This ensures the business always sees **fresh, accurate, and consistent data**.
+To treat the data platform as a production-grade system, the project is managed through GitHub and automated CI/CD validation.
+
+### **Source Control**
+- All project assets are stored in GitHub
+- Version controlled components include:
+  - Azure Data Factory pipeline JSON files
+  - Databricks notebooks
+  - dbt project files
+  - Documentation and architecture diagrams
+- Changes are committed through feature branches and merged via Pull Requests
+
+### **Continuous Integration (CI)**
+- Implemented using GitHub Actions
+- Automatically runs whenever:
+  - A Pull Request is created
+  - Changes are pushed to the main branch
+- Uses Databricks connection details stored securely as GitHub Secrets
+
+### **Automated dbt Validation**
+During every CI run:
+
+1. Checkout repository source code
+2. Install Python and dbt-databricks
+3. Generate a temporary CI profile
+4. Validate Databricks connectivity
+5. Execute `dbt deps`
+6. Execute `dbt build`
+7. Execute `dbt test`
+
+This ensures:
+
+- Models compile successfully
+- Data quality tests pass
+- Relationships remain valid
+- Broken code cannot be merged unnoticed
+
+### **CI Environment Isolation**
+- CI executes against a dedicated validation schema
+- Production Gold objects are never modified during validation
+- Environment-specific settings are managed through variables and secrets
+
+### **Reliability Controls**
+- dbt tests run automatically on every Pull Request
+- Data quality failures stop the pipeline
+- GitHub Actions provides build history and execution logs
+- Nightly orchestration is designed to be idempotent
+- Fact and dimension loads produce consistent results across reruns
+
+### **Reliability Verification**
+The platform validates reliability through:
+
+- Successful dbt build execution
+- Automated schema validation
+- Automated relationship testing
+- Automated not-null testing
+- Automated uniqueness testing
+- Nightly job monitoring
+- Row-count and revenue verification after repeated pipeline executions
+
+---
+
+## **Updated Nightly Sync Workflow**
+
+1. OLTP receives new transactions
+2. ADF ingests OLTP + external data into ADLS Bronze
+3. Databricks transforms Bronze → Silver
+4. dbt builds and tests Gold models
+5. Gold tables are published for analytics
+6. Fabric Lakehouse refreshes tables
+7. Power BI refreshes the semantic model and dashboard
+8. GitHub Actions validates future code changes through CI
+
+This ensures the business always sees **fresh, accurate, tested, and reliable data**.
 
 ---
 
@@ -73,6 +139,8 @@ This ensures the business always sees **fresh, accurate, and consistent data**.
 - **Python** — transaction simulator  
 - **SQL** — OLTP schema + Databricks SQL  
 - **GitHub** — version control
+- **dbt (Data Build Tool)** — Gold layer transformations and testing
+- **GitHub Actions** — CI/CD automation and validation
 
 ---
 
